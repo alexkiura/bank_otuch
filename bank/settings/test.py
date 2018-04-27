@@ -1,6 +1,8 @@
 import os
 from decouple import config
 
+from .base import * 
+
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 PREREQ_APPS = [
