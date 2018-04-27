@@ -11,6 +11,7 @@ dj-database-url = "*"
 coverage = "*"
 "psycopg2" = "*"
 coveralls = "*"
+djangorestframework = "*"
 
 [dev-packages]
 
