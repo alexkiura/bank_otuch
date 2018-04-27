@@ -1,7 +1,7 @@
 import os
 from decouple import config
 
-from .base import * 
+from .base import *  # noqa: F403,F401
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
