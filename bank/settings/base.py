@@ -1,6 +1,6 @@
 # flake8: noqa
 
-from decouple import config, Csv
+from decouple import config
 import os
 
 
