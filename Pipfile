@@ -5,6 +5,11 @@ name = "pypi"
 
 [packages]
 "flake8" = "*"
+django = "*"
+python-decouple = "*"
+dj-database-url = "*"
+coverage = "*"
+"psycopg2" = "*"
 
 [dev-packages]
 
