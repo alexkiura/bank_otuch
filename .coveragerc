@@ -1,0 +1,11 @@
+[report]
+omit =
+    */migrations/*
+    */site-packages/*
+    .venv/*
+    */manage.py
+    */tests/*
+    */static/*
+    *apps.py*
+
+show_missing = True

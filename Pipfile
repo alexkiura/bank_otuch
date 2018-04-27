@@ -10,6 +10,7 @@ python-decouple = "*"
 dj-database-url = "*"
 coverage = "*"
 "psycopg2" = "*"
+coveralls = "*"
 
 [dev-packages]
 
