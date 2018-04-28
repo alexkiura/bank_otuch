@@ -7,12 +7,13 @@ class UserManager(BaseUserManager):
 
     def _create_user(self, **fields):
         """
-        Create and save a user with the given email, and password.
+        Create and save a user with the given email and national_idself.
+        Use the national_id to set the initial password.
+        The user will get a prompt tp update their password on log in.
         """
         email = fields.get('email')
         national_id = fields.get('national_id')
         date_of_birth = fields.get('date_of_birth')
-        password = fields.get('password')
         if not email:
             raise ValueError("Email address is required")
         if not national_id:
@@ -22,7 +23,8 @@ class UserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(**fields)
-        user.set_password(password)
+        # set the national_id as the temporary password
+        user.set_one_time_password(national_id)
         user.save(using=self._db)
         return user
 
@@ -65,6 +67,18 @@ class BankingUser(AbstractUser):
     def is_verified(self):
         return self.verified
 
-    def verify(self):
-        self.verified = True
+    def verify(self, new_password):
+        """
+        verify a user account.
+        An account is verified after the user has updated their password
+        """
+        self.set_password(new_password)
+        self.verified = self.check_password(new_password)
+        self.save()
+
+    def set_one_time_password(self, temporary_password):
+        """
+        Set a temporary password.
+        """
+        self.set_password(temporary_password)
         self.save()
