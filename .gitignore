@@ -84,3 +84,7 @@ ENV/
 
 #pycharm things
 .idea
+
+# databases
+*.db
+*.sqlite
