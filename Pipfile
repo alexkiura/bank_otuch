@@ -12,6 +12,7 @@ coverage = "*"
 "psycopg2" = "*"
 coveralls = "*"
 djangorestframework = "*"
+pillow = "*"
 
 [dev-packages]
 
