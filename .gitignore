@@ -88,3 +88,6 @@ ENV/
 # databases
 *.db
 *.sqlite
+
+# Mac stuff
+*.DS_Store
