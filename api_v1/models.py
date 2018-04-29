@@ -67,14 +67,18 @@ class BankingUser(AbstractUser):
     def is_verified(self):
         return self.verified
 
-    def verify(self, new_password):
+    def verify(self, old_password, new_password):
         """
         verify a user account.
         An account is verified after the user has updated their password
         """
-        self.set_password(new_password)
-        self.verified = self.check_password(new_password)
-        self.save()
+        if self.check_password(old_password):
+            self.set_password(new_password)
+            self.verified = self.check_password(new_password)
+            self.save()
+            return self.is_verified
+        else:
+            raise ValueError('Incorrect password')
 
     def set_one_time_password(self, temporary_password):
         """
