@@ -7,5 +7,6 @@ omit =
     */tests/*
     */static/*
     *apps.py*
+    */distutils/*
 
 show_missing = True
