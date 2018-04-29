@@ -84,3 +84,10 @@ ENV/
 
 #pycharm things
 .idea
+
+# databases
+*.db
+*.sqlite
+
+# Mac stuff
+*.DS_Store

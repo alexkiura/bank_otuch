@@ -23,9 +23,13 @@ PREREQ_APPS = [
     'rest_framework',
 ]
 
-PROJECT_APPS = []
+PROJECT_APPS = [
+    'api_v1',
+]
 
 INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
+
+AUTH_USER_MODEL = 'api_v1.BankingUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
