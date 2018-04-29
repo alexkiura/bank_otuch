@@ -6,7 +6,7 @@ from .models import BankingUser
 
 
 class BankingUserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=100, required=True)
+    email = serializers.EmailField(max_length=255, required=True)
 
     def validate(self, data):
         try:
