@@ -24,17 +24,21 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
         email = request.data.get('email')
         date_of_birth = request.data.get('date_of_birth')
         national_id = request.data.get('national_id')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
 
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             BankingUser.objects.create_user(
                 email=email,
                 date_of_birth=date_of_birth,
-                national_id=national_id
+                national_id=national_id,
+                first_name=first_name,
+                last_name=last_name
             )
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         else:
             return Response({'error':
-                             'The email was not valid.'},
+                             serializer.errors},
                             status=status.HTTP_400_BAD_REQUEST)
