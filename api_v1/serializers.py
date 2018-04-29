@@ -32,7 +32,3 @@ class BankingUserVerifySerializer(serializers.Serializer):
         max_length=100, required=True, write_only=True)
     new_password = serializers.CharField(
         max_length=100, required=True, write_only=True)
-
-    # class Meta:
-    #     # model = BankingUser
-    #     fields = ('email', 'old_password', 'new_password', 'verified')
