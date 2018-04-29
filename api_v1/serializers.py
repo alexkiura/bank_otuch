@@ -7,6 +7,8 @@ from .models import BankingUser
 
 class BankingUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, required=True)
+    national_id = serializers.EmailField(max_length=100, required=True)
+    date_of_birth = serializers.DateField(required=True)
 
     def validate(self, data):
         try:
