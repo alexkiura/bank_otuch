@@ -47,7 +47,7 @@ jobs:
       - run:
          name: run tests
          command: |
-           pipenv run coverage run manage.py test --keepdb
+           pipenv run coverage run manage.py test
       - run:
           name: run coveralls
           command: |
