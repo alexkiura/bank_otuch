@@ -69,7 +69,7 @@ class BankingUserTestCase(TestCase):
         verifying them.
         """
         self.assertFalse(self.test_user.is_verified)
-        self.test_user.verify('pass123')
+        self.test_user.verify(self.test_user.national_id, 'pass123')
         verified_user = BankingUser.objects.get(
             email='test_user@example.com')
         self.assertTrue(verified_user.is_verified)
