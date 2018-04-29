@@ -82,3 +82,12 @@ class BankingUser(AbstractUser):
         """
         self.set_password(temporary_password)
         self.save()
+
+    def to_dict(self):
+        return {
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'national_id': self.national_id,
+            'date_of_birth': str(self.date_of_birth)
+        }
