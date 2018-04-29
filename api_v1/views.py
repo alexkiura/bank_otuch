@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .models import BankingUser
-from .serializers import BankingUserSerializer
+from .serializers import BankingUserSerializer, BankingUserVerifySerializer
 
 
 class BankingUserCreateViewSet(viewsets.ModelViewSet):
@@ -42,3 +42,38 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
             return Response({'error':
                              serializer.errors},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class BankingUserVerifyViewSet(BankingUserCreateViewSet):
+    """
+    API View that receives a POST with the following fields:
+        - email
+        - one time password
+    Verifies a user and returns a success messsage..
+    """
+    serializer_class = BankingUserVerifySerializer
+
+    def verify(self, request):
+        email = request.data.get('email')
+        one_time_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'error':
+                             serializer.errors},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            unverified_user = BankingUser.objects.get(email=email)
+            unverified_user.verify(one_time_password, new_password)
+            return Response({
+                    'email': email,
+                    'verified': unverified_user.is_verified
+                },
+                status=status.HTTP_200_OK)
+
+        except Exception as error:
+            return Response({
+                'error': [error.args]},
+                status=status.HTTP_400_BAD_REQUEST
+            )

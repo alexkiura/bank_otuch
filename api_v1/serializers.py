@@ -24,3 +24,15 @@ class BankingUserSerializer(serializers.ModelSerializer):
         model = BankingUser
         fields = ('date_of_birth', 'email', 'national_id', 'first_name',
                   'last_name')
+
+
+class BankingUserVerifySerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255, required=True)
+    old_password = serializers.CharField(
+        max_length=100, required=True, write_only=True)
+    new_password = serializers.CharField(
+        max_length=100, required=True, write_only=True)
+
+    # class Meta:
+    #     # model = BankingUser
+    #     fields = ('email', 'old_password', 'new_password', 'verified')
