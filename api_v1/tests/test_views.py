@@ -37,9 +37,9 @@ class BankingUserActions(APITestCase):
         self.assertDictEqual(created_user.to_dict(), user_dict)
 
     def test_user_login(self):
-        response = self.client.post('/api/v1/auth/login/',
+        response = self.client.post(self.login_url,
                                     {'email': 'janeharry@example.com',
-                                     'password': 'nomasana'},
+                                     'password': '8988192'},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('token', response.data)

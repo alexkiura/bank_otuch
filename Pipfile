@@ -13,6 +13,7 @@ coverage = "*"
 coveralls = "*"
 djangorestframework = "*"
 pillow = "*"
+djangorestframework-jwt = "*"
 
 [dev-packages]
 
