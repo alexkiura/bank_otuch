@@ -38,13 +38,8 @@ class BankingUserActions(APITestCase):
 
     def test_user_login(self):
         response = self.client.post('/api/v1/auth/login/',
-                                    {'username': 'arafat',
+                                    {'email': 'janeharry@example.com',
                                      'password': 'nomasana'},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('token', response.data)
-    #
-    # def test_token_refresh(self):
-    #     response = self.client.post('/api/v1/auth/token-refresh/',
-    #                                 {'token': self.token}, format='json')
-    #     self.assertEqual(response.data['token'], self.token)
