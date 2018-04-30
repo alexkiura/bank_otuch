@@ -28,13 +28,13 @@ class BankAccountTestCase(TestCase):
     def test_bank_account_deposit(self):
         self.assertEqual(self.bank_account.balance, 0.00)
         self.bank_account.deposit(10000)
-        self.assertEqual(self.bank_account.balance, float(10000))
+        self.assertEqual(self.bank_account.balance, 10000)
 
     def test_bank_account_withdrawal(self):
         self.assertEqual(self.bank_account.balance, 0.00)
         self.bank_account.deposit(100000)
         self.bank_account.withdraw(20000)
-        self.assertEqual(self.bank_account.balance, float(80000))
+        self.assertEqual(self.bank_account.balance, 80000)
 
     def test_withdrawal_beyond_daily_limit(self):
         """
