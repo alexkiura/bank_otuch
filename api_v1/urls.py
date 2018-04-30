@@ -31,7 +31,4 @@ urlpatterns = [
         'post': 'do_transact',
         'get': 'list'}),
         name='account-deposit'),
-    # path('transactions/withdraw', TransactionViewSet.as_view({
-    #     'post': 'do_transact'}),
-    #     name='account-withdraw')
 ]
