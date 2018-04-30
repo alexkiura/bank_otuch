@@ -2,7 +2,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from .models import BankingUser
+from .models import BankingUser, BankAccount
 
 
 class BankingUserSerializer(serializers.ModelSerializer):
@@ -32,3 +32,10 @@ class BankingUserVerifySerializer(serializers.Serializer):
         max_length=100, required=True, write_only=True)
     new_password = serializers.CharField(
         max_length=100, required=True, write_only=True)
+
+
+class BankAccountSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BankAccount
+        fields = ('__all__')

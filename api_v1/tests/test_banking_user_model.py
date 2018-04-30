@@ -1,8 +1,8 @@
+import datetime
+
 from django.test import TestCase  # noqa: F401
 from ..models import BankingUser
 from django.db import IntegrityError
-
-import datetime
 
 
 class BankingUserTestCase(TestCase):
@@ -73,6 +73,14 @@ class BankingUserTestCase(TestCase):
         verified_user = BankingUser.objects.get(
             email='test_user@example.com')
         self.assertTrue(verified_user.is_verified)
+
+    def test_banking_user_verification_wrong_password(self):
+        """
+        Test the verification of a user with a wrong password
+        """
+        self.assertFalse(self.test_user.is_verified)
+        with self.assertRaises(ValueError):
+            self.test_user.verify('wrongpassword', 'pass123')
 
     def test_create_user_with_no_email(self):
         """

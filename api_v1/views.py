@@ -1,10 +1,11 @@
 from django.shortcuts import render  # noqa: F401
 from rest_framework import status, viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .models import BankingUser
-from .serializers import BankingUserSerializer, BankingUserVerifySerializer
+from .models import BankingUser, BankAccount
+from .serializers import (BankingUserSerializer, BankingUserVerifySerializer,
+                          BankAccountSerializer)
 
 
 class BankingUserCreateViewSet(viewsets.ModelViewSet):
@@ -77,3 +78,9 @@ class BankingUserVerifyViewSet(BankingUserCreateViewSet):
                 'error': [error.args]},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class BankAccountViewSet(viewsets.ModelViewSet):
+    queryset = BankAccount.objects.all()
+    serializer_class = BankAccountSerializer
+    permission_classes = (IsAuthenticated,)
