@@ -95,3 +95,43 @@ class BankingUser(AbstractUser):
             'national_id': self.national_id,
             'date_of_birth': str(self.date_of_birth)
         }
+
+
+class BankAccount(models.Model):
+    type_choices = (
+        ('savings', 'Savings'),
+        ('current', 'Current'),
+    )
+    owner = models.ForeignKey(
+        BankingUser,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name='account')
+    account_type = models.CharField(
+        max_length=100, choices=type_choices, null=False)
+    balance = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        default=0.00,
+        blank=True
+        )
+    active = models.BooleanField(default=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    def deposit(self, amount):
+        if amount > 0.0:
+            self.balance += amount
+            self.save()
+            return True
+        else:
+            raise ValueError('Amount needs to be a positive number')
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            raise ValueError('Amount exceeds available balance')
+        if abs(amount) > 50000:
+            raise ValueError('Can not withdraw more than 50,000 in one day')
+        else:
+            self.balance -= abs(amount)
+            return True
