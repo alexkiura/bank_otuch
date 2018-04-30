@@ -10,6 +10,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', cast=bool)
 
+SENDGRID_API_KEY = config('SENDGRID_API_KEY')
+
 ALLOWED_HOSTS=['.localhost', '.herokuapp.com', '127.0.0.1']
 
 # Application definition

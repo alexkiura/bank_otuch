@@ -1,4 +1,3 @@
-from django.shortcuts import render  # noqa: F401
 from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -6,6 +5,7 @@ from rest_framework.response import Response
 from .models import BankingUser, BankAccount, Transaction
 from .serializers import (BankingUserSerializer, BankingUserVerifySerializer,
                           BankAccountSerializer, TransactionSerializer)
+from .utils import send_mail
 
 
 class BankingUserCreateViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,25 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
     serializer_class = BankingUserSerializer
     permission_classes = (AllowAny,)
 
+    @staticmethod
+    def send_one_time_password(user):
+        name = user.first_name
+        password = user.national_id
+        email_to = user.email
+        verify_url = 'https://bank-otuch.herokuapp.com/api/v1/auth/verify/'
+        subject = 'Please verify your account'
+        email_from = 'noreply@bank-otuch.com'
+        content = (f'Hello {name}. Welcome to Bank Otuch.'
+                   f'Your one time password is: {password}.'
+                   f'Visit {verify_url} to verify your account'
+                   f' and change your password.')
+        return send_mail(
+            email_to=email_to,
+            email_from=email_from,
+            content=content,
+            subject=subject
+        )
+
     def create(self, request):
         email = request.data.get('email')
         date_of_birth = request.data.get('date_of_birth')
@@ -30,13 +49,16 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            BankingUser.objects.create_user(
+            banking_user = BankingUser.objects.create_user(
                 email=email,
                 date_of_birth=date_of_birth,
                 national_id=national_id,
                 first_name=first_name,
                 last_name=last_name
             )
+            if banking_user:  # send one-time password to user
+                self.send_one_time_password(user=banking_user)
+
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         else:

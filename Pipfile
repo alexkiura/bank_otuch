@@ -15,6 +15,7 @@ djangorestframework = "*"
 pillow = "*"
 djangorestframework-jwt = "*"
 gunicorn = "*"
+sendgrid = "*"
 
 [dev-packages]
 
