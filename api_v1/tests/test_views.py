@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -43,3 +45,44 @@ class BankingUserActions(APITestCase):
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('token', response.data)
+
+
+class BankAccountTestCase(APITestCase):
+    def setUp(self):
+        self.date_of_birth = datetime.datetime(1990, 1, 1)
+        self.register_url = '/api/v1/auth/register/'
+        self.login_url = '/api/v1/auth/login/'
+        self.verify_url = '/api/v1/auth/verify/'
+        self.post_account_url = '/api/v1/account/'
+        self.user = BankingUser.objects.create_user(
+            email='matt@example.com',
+            date_of_birth=self.date_of_birth,
+            national_id='071238281'
+        )
+
+        user_verify_dict = {
+            'email': self.user.email,
+            'old_password': self.user.national_id,
+            'new_password': 'pass123',
+        }
+
+        user_login_dict = {
+            'email': self.user.email,
+            'password': 'pass123',
+        }
+
+        self.client.post(self.verify_url, user_verify_dict, format='json')
+        response = self.client.post(
+            self.login_url, user_login_dict, format='json')
+        self.token = response.data['token']
+        self.client.credentials(HTTP_AUTHORIZATION='JWT ' + self.token)
+
+    def test_create_bank_account(self):
+        account_create_dict = {
+            'owner': self.user.id,
+            'account_type': 'savings'
+        }
+        response = self.client.post(
+            self.post_account_url, account_create_dict
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
