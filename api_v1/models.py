@@ -1,5 +1,7 @@
-from django.db import models  # noqa: F401
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.dispatch import receiver
+from django.db import models
+from django.db.models.signals import post_save
 
 
 class UserManager(BaseUserManager):
@@ -106,20 +108,21 @@ class BankAccount(models.Model):
         BankingUser,
         on_delete=models.CASCADE,
         blank=False,
-        related_name='account')
+        related_name='accounts')
     account_type = models.CharField(
         max_length=100, choices=type_choices, null=False)
-    balance = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        default=0.00,
-        blank=True
-        )
+    balance = models.FloatField(default=0, blank=True)
+    #     max_digits=15,
+    #     decimal_places=2,
+    #     default=0.00,
+    #     blank=True
+    # )
     active = models.BooleanField(default=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
     def deposit(self, amount):
+        amount = float(amount)
         if amount > 0.0:
             self.balance += amount
             self.save()
@@ -128,10 +131,59 @@ class BankAccount(models.Model):
             raise ValueError('Amount needs to be a positive number')
 
     def withdraw(self, amount):
+        amount = float(amount)
         if amount > self.balance:
             raise ValueError('Amount exceeds available balance')
+            return False
         if abs(amount) > 50000:
             raise ValueError('Can not withdraw more than 50,000 in one day')
+            return False
         else:
             self.balance -= abs(amount)
+            self.save()
             return True
+
+
+class Transaction(models.Model):
+    transaction_type_choices = (
+        ('deposit', 'Deposit'),
+        ('withdraw', 'Withdraw')
+    )
+    timestamp = models.DateTimeField(auto_now=True)
+    amount = models.FloatField(default=0, blank=True)
+    #     max_digits=15,
+    #     decimal_places=2,
+    #     default=0.00,
+    #     blank=True
+    # )
+    transaction_type = models.CharField(
+        max_length=100,
+        choices=transaction_type_choices,
+        blank=False,
+        null=False
+    )
+    description = models.CharField(max_length=255, blank=False)
+    account = models.ForeignKey(
+        BankAccount,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name='transactions'
+    )
+    success = models.BooleanField(default=False, blank=True)
+
+
+@receiver(post_save, sender=Transaction)
+def update_bank_account_balance(sender, **kwargs):
+    transaction = kwargs.get('instance')
+    created = kwargs.get('created')
+    if not created:
+        return
+    bank_account = transaction.account
+    successful = False
+    if bank_account:
+        if transaction.transaction_type == 'deposit':
+            successful = bank_account.deposit(transaction.amount)
+        if transaction.transaction_type == 'withdraw':
+            successful = bank_account.withdraw(transaction.amount)
+    transaction.success = successful
+    # transaction.save()

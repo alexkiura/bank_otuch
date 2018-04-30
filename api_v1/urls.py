@@ -3,7 +3,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework import routers
 
 from .views import (BankingUserCreateViewSet, BankingUserVerifyViewSet,
-                    BankAccountViewSet)
+                    BankAccountViewSet, TransactionViewSet)
 
 router = routers.SimpleRouter()
 router.register('account', BankAccountViewSet)
@@ -20,11 +20,18 @@ urlpatterns = [
         name='user-verify'
     ),
     path('auth/login/', obtain_jwt_token, name='user-verify'),
-    path('account/', BankAccountViewSet.as_view({
+    path('accounts/', BankAccountViewSet.as_view({
         'post': 'create',
         'get': 'list'})),
-    path('account/<int:pk>/', BankAccountViewSet.as_view({
+    path('accounts/<int:pk>/', BankAccountViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
-        'delete': 'destroy'}))
+        'delete': 'destroy'})),
+    path('transactions/', TransactionViewSet.as_view({
+        'post': 'do_transact',
+        'get': 'list'}),
+        name='account-deposit'),
+    # path('transactions/withdraw', TransactionViewSet.as_view({
+    #     'post': 'do_transact'}),
+    #     name='account-withdraw')
 ]

@@ -3,7 +3,7 @@ import datetime
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import BankingUser
+from ..models import BankingUser, BankAccount
 
 
 class BankingUserActions(APITestCase):
@@ -53,7 +53,7 @@ class BankAccountTestCase(APITestCase):
         self.register_url = '/api/v1/auth/register/'
         self.login_url = '/api/v1/auth/login/'
         self.verify_url = '/api/v1/auth/verify/'
-        self.post_account_url = '/api/v1/account/'
+        self.post_account_url = '/api/v1/accounts/'
         self.user = BankingUser.objects.create_user(
             email='matt@example.com',
             date_of_birth=self.date_of_birth,
@@ -85,4 +85,67 @@ class BankAccountTestCase(APITestCase):
         response = self.client.post(
             self.post_account_url, account_create_dict
         )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class TransactionTestCase(APITestCase):
+    def setUp(self):
+        self.date_of_birth = datetime.datetime(1990, 1, 1)
+        self.login_url = '/api/v1/auth/login/'
+        self.verify_url = '/api/v1/auth/verify/'
+        self.post_account_url = '/api/v1/accounts/'
+        self.post_transaction_url = '/api/v1/transactions/'
+        self.user = BankingUser.objects.create_user(
+            email='matt@example.com',
+            date_of_birth=self.date_of_birth,
+            national_id='071238281'
+        )
+        self.bank_account = BankAccount.objects.create(
+            owner=self.user,
+            account_type='current'
+        )
+        user_verify_dict = {
+            'email': self.user.email,
+            'old_password': self.user.national_id,
+            'new_password': 'pass123',
+        }
+
+        user_login_dict = {
+            'email': self.user.email,
+            'password': 'pass123',
+        }
+
+        self.client.post(self.verify_url, user_verify_dict, format='json')
+        response = self.client.post(
+            self.login_url, user_login_dict, format='json')
+        self.token = response.data['token']
+        self.client.credentials(HTTP_AUTHORIZATION='JWT ' + self.token)
+
+    def test_deposit_transaction(self):
+        account_deposit_dict = {
+            'transaction_type': 'deposit',
+            'account': self.bank_account.id,
+            'description': 'deposit',
+            'amount': float(10000)
+        }
+        response = self.client.post(
+            self.post_transaction_url, account_deposit_dict
+        )
+        updated_bank_account = BankAccount.objects.get(id=self.bank_account.id)
+        self.assertEqual(updated_bank_account.balance, float(10000))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_withdraw_transaction(self):
+        self.bank_account.deposit(20000)
+        account_withdraw_dict = {
+            'transaction_type': 'withdraw',
+            'account': self.bank_account.id,
+            'description': 'deposit',
+            'amount': float(10000)
+        }
+        response = self.client.post(
+            self.post_transaction_url, account_withdraw_dict
+        )
+        updated_bank_account = BankAccount.objects.get(id=self.bank_account.id)
+        self.assertEqual(updated_bank_account.balance, float(10000))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

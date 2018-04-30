@@ -2,7 +2,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from .models import BankingUser, BankAccount
+from .models import BankingUser, BankAccount, Transaction
 
 
 class BankingUserSerializer(serializers.ModelSerializer):
@@ -38,4 +38,10 @@ class BankAccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BankAccount
+        fields = ('__all__')
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
         fields = ('__all__')
