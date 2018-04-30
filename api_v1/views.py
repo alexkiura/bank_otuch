@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.urls import reverse
 from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
