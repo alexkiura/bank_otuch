@@ -36,9 +36,11 @@ class BankingUserVerifySerializer(serializers.Serializer):
 
 class BankAccountSerializer(serializers.ModelSerializer):
 
+
     class Meta:
         model = BankAccount
-        fields = ('__all__')
+        # fields = ('__all__')
+        exclude = ('owner',)
 
 
 class TransactionSerializer(serializers.ModelSerializer):

@@ -107,6 +107,18 @@ class BankAccountViewSet(viewsets.ModelViewSet):
     serializer_class = BankAccountSerializer
     permission_classes = (IsAuthenticated,)
 
+    def create(self, request):
+        owner = request.user
+        account_type = request.data.get('account_type')
+
+        bank_account = BankAccount.objects.create(
+            owner=owner, account_type=account_type
+        )
+        serializer = self.get_serializer(bank_account)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED
+        )
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
