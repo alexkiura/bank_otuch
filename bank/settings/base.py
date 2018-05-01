@@ -23,7 +23,9 @@ PREREQ_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'pipeline',
+    'corsheaders',
 ]
 
 PROJECT_APPS = [
@@ -35,6 +37,9 @@ INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
 AUTH_USER_MODEL = 'api_v1.BankingUser'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -43,6 +48,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3000',
+    '192.168.0.17:3000',
+    'herokuapp.com'
+)
 
 ROOT_URLCONF = 'bank.urls'
 
