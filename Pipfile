@@ -16,6 +16,8 @@ pillow = "*"
 djangorestframework-jwt = "*"
 gunicorn = "*"
 sendgrid = "*"
+django-cors-headers = "*"
+django-pipeline = "*"
 
 [dev-packages]
 
