@@ -54,7 +54,8 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     '192.168.0.17:3000',
-    'herokuapp.com'
+    'herokuapp.com',
+    'bank-otuch-web.herokuapp.com',
 )
 
 ROOT_URLCONF = 'bank.urls'
