@@ -103,7 +103,7 @@ class BankingUserVerifyViewSet(BankingUserCreateViewSet):
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):
-    queryset = BankAccount.objects.all()
+    queryset = BankAccount.objects.all().order_by('-last_modified')
     serializer_class = BankAccountSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -121,13 +121,19 @@ class BankAccountViewSet(viewsets.ModelViewSet):
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
+    queryset = Transaction.objects.all().order_by('-timestamp')
     serializer_class = TransactionSerializer
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
+        account = int(request.query_params.get('account', 0))
         transactions = Transaction.objects.filter(
-            account__owner=request.user).all()
+            account__owner=request.user, success=True,
+            account__id=account).all().order_by('-timestamp')
+        page = self.paginate_queryset(transactions)
+        if page:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(transactions, many=True)
         return Response(serializer.data)
 

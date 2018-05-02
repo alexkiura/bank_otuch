@@ -36,7 +36,6 @@ class BankingUserVerifySerializer(serializers.Serializer):
 
 class BankAccountSerializer(serializers.ModelSerializer):
 
-
     class Meta:
         model = BankAccount
         # fields = ('__all__')
