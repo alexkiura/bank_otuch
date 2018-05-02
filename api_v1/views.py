@@ -107,6 +107,16 @@ class BankAccountViewSet(viewsets.ModelViewSet):
     serializer_class = BankAccountSerializer
     permission_classes = (IsAuthenticated,)
 
+    def list(self, request):
+        accounts = BankAccount.objects.filter(
+            owner=request.user).all().order_by('-last_modified')
+        page = self.paginate_queryset(accounts)
+        if page:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(accounts, many=True)
+        return Response(serializer.data)
+
     def create(self, request):
         owner = request.user
         account_type = request.data.get('account_type')
