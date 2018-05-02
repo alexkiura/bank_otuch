@@ -26,7 +26,7 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
         name = user.first_name
         password = user.national_id
         email_to = user.email
-        verify_url = 'https://bank-otuch.herokuapp.com/api/v1/auth/verify/'
+        verify_url = 'https://bank-otuch-web.herokuapp.com/verify'
         subject = 'Please verify your account'
         email_from = 'noreply@bank-otuch.com'
         content = (f'Hello {name}. Welcome to Bank Otuch.'
