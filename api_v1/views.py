@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -48,7 +49,7 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
         last_name = request.data.get('last_name')
 
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
+        try:
             banking_user = BankingUser.objects.create_user(
                 email=email,
                 date_of_birth=date_of_birth,
@@ -56,6 +57,12 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
                 first_name=first_name,
                 last_name=last_name
             )
+        except IntegrityError as error:
+            return Response(
+                {'error': 'The email address already exists'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if serializer.is_valid():
             if banking_user:  # send one-time password to user
                 self.send_one_time_password(user=banking_user)
 
