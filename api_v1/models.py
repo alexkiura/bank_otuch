@@ -146,11 +146,6 @@ class Transaction(models.Model):
     )
     timestamp = models.DateTimeField(auto_now=True)
     amount = models.FloatField(default=0, blank=True)
-    #     max_digits=15,
-    #     decimal_places=2,
-    #     default=0.00,
-    #     blank=True
-    # )
     transaction_type = models.CharField(
         max_length=100,
         choices=transaction_type_choices,
