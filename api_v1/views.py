@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -26,7 +27,7 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
         name = user.first_name
         password = user.national_id
         email_to = user.email
-        verify_url = 'https://bank-otuch.herokuapp.com/api/v1/auth/verify/'
+        verify_url = 'https://bank-otuch-web.herokuapp.com/verify'
         subject = 'Please verify your account'
         email_from = 'noreply@bank-otuch.com'
         content = (f'Hello {name}. Welcome to Bank Otuch.'
@@ -48,7 +49,7 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
         last_name = request.data.get('last_name')
 
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
+        try:
             banking_user = BankingUser.objects.create_user(
                 email=email,
                 date_of_birth=date_of_birth,
@@ -56,6 +57,12 @@ class BankingUserCreateViewSet(viewsets.ModelViewSet):
                 first_name=first_name,
                 last_name=last_name
             )
+        except IntegrityError as error:
+            return Response(
+                {'error': 'The email address already exists'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if serializer.is_valid():
             if banking_user:  # send one-time password to user
                 self.send_one_time_password(user=banking_user)
 
@@ -103,19 +110,47 @@ class BankingUserVerifyViewSet(BankingUserCreateViewSet):
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):
-    queryset = BankAccount.objects.all()
+    queryset = BankAccount.objects.all().order_by('-last_modified')
     serializer_class = BankAccountSerializer
     permission_classes = (IsAuthenticated,)
 
+    def list(self, request):
+        accounts = BankAccount.objects.filter(
+            owner=request.user).all().order_by('-last_modified')
+        page = self.paginate_queryset(accounts)
+        if page:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(accounts, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        owner = request.user
+        account_type = request.data.get('account_type')
+
+        bank_account = BankAccount.objects.create(
+            owner=owner, account_type=account_type
+        )
+        serializer = self.get_serializer(bank_account)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED
+        )
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
+    queryset = Transaction.objects.all().order_by('-timestamp')
     serializer_class = TransactionSerializer
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
+        account = int(request.query_params.get('account', 0))
         transactions = Transaction.objects.filter(
-            account__owner=request.user).all()
+            account__owner=request.user, success=True,
+            account__id=account).all().order_by('-timestamp')
+        page = self.paginate_queryset(transactions)
+        if page:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(transactions, many=True)
         return Response(serializer.data)
 

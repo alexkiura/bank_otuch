@@ -54,7 +54,8 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     '192.168.0.17:3000',
-    'herokuapp.com'
+    'herokuapp.com',
+    'bank-otuch-web.herokuapp.com',
 )
 
 ROOT_URLCONF = 'bank.urls'
@@ -108,7 +109,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    )
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 15
 }
 
 JWT_AUTH = {

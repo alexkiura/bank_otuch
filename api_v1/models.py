@@ -112,11 +112,6 @@ class BankAccount(models.Model):
     account_type = models.CharField(
         max_length=100, choices=type_choices, null=False)
     balance = models.FloatField(default=0, blank=True)
-    #     max_digits=15,
-    #     decimal_places=2,
-    #     default=0.00,
-    #     blank=True
-    # )
     active = models.BooleanField(default=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -186,4 +181,4 @@ def update_bank_account_balance(sender, **kwargs):
         if transaction.transaction_type == 'withdraw':
             successful = bank_account.withdraw(transaction.amount)
     transaction.success = successful
-    # transaction.save()
+    transaction.save()
