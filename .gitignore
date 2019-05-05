@@ -91,3 +91,6 @@ ENV/
 
 # Mac stuff
 *.DS_Store
+
+# Vs code
+.vscode/
